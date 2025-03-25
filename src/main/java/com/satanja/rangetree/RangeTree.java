@@ -35,8 +35,11 @@ public class RangeTree {
         // left branch
         RangeTreeNode leftBranch = splitNode.getLeftSubtree();
         FractionalCascadingKey leftKey = splitKey.getLeftChild();
-        while (leftBranch != null) {
+        while (leftBranch != null && leftKey != null) {
             if (leftBranch.getPosition() < xMin) {
+                if (leftBranch.isLeafNode()) {
+                    break;
+                }
                 leftBranch = leftBranch.getRightSubtree();
                 leftKey = leftKey.getRightChild();
             } else if (leftBranch.getPosition() > xMin) {
@@ -45,7 +48,9 @@ public class RangeTree {
                     points.addAll(leftBranch.getRightSubtree().report(leftKey.getRightChild(), window));
                 } else if (leftBranch.isLeafNode()) {
                     points.addAll(leftBranch.report(leftKey, window));
+                    break;
                 }
+
                 leftBranch = leftBranch.getLeftSubtree();
                 leftKey = leftKey.getLeftChild();
             } else {
@@ -56,8 +61,11 @@ public class RangeTree {
 
         RangeTreeNode rightBranch = splitNode.getRightSubtree();
         FractionalCascadingKey rightKey = splitKey.getRightChild();
-        while (rightBranch != null) {
+        while (rightBranch != null && rightKey != null) {
             if (rightBranch.getPosition() > xMax) {
+                if (rightBranch.isLeafNode()) {
+                    break;
+                }
                 rightBranch = rightBranch.getLeftSubtree();
                 rightKey = rightKey.getLeftChild();
             } else if (rightBranch.getPosition() < xMax) {
@@ -66,6 +74,7 @@ public class RangeTree {
                     points.addAll(rightBranch.getLeftSubtree().report(rightKey.getLeftChild(), window));
                 } else if (rightBranch.isLeafNode()) {
                     points.addAll(rightBranch.report(rightKey, window));
+                    break;
                 }
                 rightBranch = rightBranch.getRightSubtree();
                 rightKey = rightKey.getRightChild();
@@ -80,7 +89,7 @@ public class RangeTree {
 
     private SplitNodeResult findSplitNode(final Window window) {
         RangeTreeNode currentNode = this.root;
-        FractionalCascadingKey fractionalCascadingKey = currentNode.rootSearch(window.getXMin());
+        FractionalCascadingKey fractionalCascadingKey = currentNode.rootSearch(window.getYMin());
 
         while (currentNode.compareTo(window.getXMin(), window.getXMax()) != 0) {
             if (currentNode.compareTo(window.getXMin(), window.getXMax()) > 0) {
@@ -131,7 +140,7 @@ public class RangeTree {
         final FractionalCascading current = parent == null ? new FractionalCascading(currentYPoints) : new FractionalCascading(parent, currentYPoints, isLhs);
 
         if (currentYPoints.size() == 1) {
-            return new RangeTreeNode(currentYPoints.getFirst().getX(), current);
+            return new RangeTreeNode(currentYPoints.get(0).getX(), current);
         } else {
             final int size = endIndex - startIndex;
             final int median = size % 2 == 0 ? size / 2 - 1 : size / 2;

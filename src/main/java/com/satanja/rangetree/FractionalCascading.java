@@ -76,11 +76,10 @@ public class FractionalCascading {
                 if (parentKey.getPoint().getY() <= childKey.getPoint().getY()) {
                     if (isLhs) {
                         parentKey.setLeft(childKey);
-                        indexParent += 1;
                     } else {
                         parentKey.setRight(childKey);
-                        indexParent += 1;
                     }
+                    indexParent += 1;
                     break;
                 }
             }

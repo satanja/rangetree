@@ -45,10 +45,10 @@ class RangeTreeNode {
         }
 
         if (position < min) {
-            return -1;
+            return 1;
         }
 
-        return 1;
+        return -1;
     }
 
     boolean isLeafNode() {
